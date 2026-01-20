@@ -22,7 +22,6 @@
           <th>Room Number</th>
           <th>Course</th>
           <th>Hostel Block</th>
-          <th>Admission Date</th>
         </tr>
       </thead>
       <tbody>
@@ -53,7 +52,6 @@
               <td>${student.room_no}</td>
               <td>${student.course || "-"}</td>
               <td>${student.hostel_block || "-"}</td>
-              <td>${new Date(student.admission_date).toLocaleDateString()}</td>
             `;
             tableBody.appendChild(tr);
           });
