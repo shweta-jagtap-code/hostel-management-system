@@ -1,7 +1,88 @@
-<h2>Dashboard</h2>
-<div id="info"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Hostel Management</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
 
-<script>
-const user = JSON.parse(localStorage.getItem("user"));
-info.innerHTML = `Welcome ${user.username} (${user.role})`;
-</script>
+  <!-- Navbar -->
+  <div class="navbar">
+    <h1>Hostel Dashboard</h1>
+    <button id="logout-btn">Logout</button>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="welcome" id="welcome-text">
+      Welcome, <span id="user-name"></span> (<span id="user-role"></span>)
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="cards" id="dashboard-cards">
+      <!-- Cards will be dynamically added by JS -->
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2026 Hostel Management System
+  </footer>
+
+  <script>
+    // Get user info from localStorage
+    const user = JSON.parse(localStorage.getItem("user")) || {username:"Guest", role:"GUEST"};
+    document.getElementById("user-name").textContent = user.username;
+    document.getElementById("user-role").textContent = user.role;
+
+    // Dashboard cards configuration
+    const cards = [
+      { title: "Students", desc: "View all students living in hostel", role: "ADMIN", page: "students.html" },
+      { title: "Add Student", desc: "Add a new student record", role: "WARDEN", page: "add-student.html" },
+      { title: "Staff Management", desc: "Manage staff members and roles", role: "ADMIN", page: "coming-soon.html" },
+      { title: "Attendance", desc: "Track student attendance", role: "WARDEN", page: "coming-soon.html" },
+      { title: "Menu", desc: "Manage hostel meals and menu", role: "COOK", page: "coming-soon.html" },
+      { title: "Security Logs", desc: "Monitor hostel security activities", role: "SECURITY", page: "coming-soon.html" },
+      { title: "Cleaning Schedule", desc: "Manage cleaning staff duties", role: "CLEANER", page: "coming-soon.html" }
+    ];
+
+    const container = document.getElementById("dashboard-cards");
+
+    // Create cards dynamically
+    cards.forEach(card => {
+      // Show card if user has permission
+      if(user.role === "ADMIN" || user.role === card.role) {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "card";
+        cardDiv.innerHTML = `
+          <h2>${card.title}</h2>
+          <p>${card.desc}</p>
+          <span class="role ${card.role}">${card.role}</span>
+        `;
+
+        // Redirect card click
+        cardDiv.addEventListener("click", () => {
+          // Admin can go to page if exists
+          if(user.role === "ADMIN" || user.role === card.role) {
+            window.location.href = card.page;
+          } else {
+            window.location.href = "coming-soon.html";
+          }
+        });
+
+        container.appendChild(cardDiv);
+      }
+    });
+
+    // Logout button
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+    });
+
+  </script>
+
+</body>
+</html>

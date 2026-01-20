@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Student - Hostel Management</title>
+  <link rel="stylesheet" href="add-student.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Add New Student</h1>
+
+    <form id="add-student-form">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter student name" required>
+
+      <label for="roll_no">Roll Number</label>
+      <input type="text" id="roll_no" name="roll_no" placeholder="Enter roll number" required>
+
+      <label for="room_no">Room Number</label>
+      <input type="text" id="room_no" name="room_no" placeholder="Enter room number" required>
+
+      <label for="course">Course</label>
+      <input type="text" id="course" name="course" placeholder="Enter course name">
+
+      <label for="hostel_block">Hostel Block</label>
+      <input type="text" id="hostel_block" name="hostel_block" placeholder="Enter hostel block">
+
+      <button type="submit">Add Student</button>
+    </form>
+
+    <div id="message"></div>
+    <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    const form = document.getElementById("add-student-form");
+    const messageDiv = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const studentData = {
+        name: form.name.value,
+        roll_no: form.roll_no.value,
+        room_no: form.room_no.value,
+        course: form.course.value,
+        hostel_block: form.hostel_block.value
+      };
+
+      try {
+        const res = await fetch("http://localhost:3000/api/students", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(studentData)
+        });
+
+        const data = await res.json();
+
+        if(res.ok){
+          messageDiv.textContent = "✅ Student added successfully!";
+          messageDiv.style.color = "green";
+          form.reset();
+        } else {
+          messageDiv.textContent = "❌ Error: " + data.message;
+          messageDiv.style.color = "red";
+        }
+
+      } catch (err) {
+        messageDiv.textContent = "❌ Network error: " + err.message;
+        messageDiv.style.color = "red";
+      }
+    });
+  </script>
+
+</body>
+</html>

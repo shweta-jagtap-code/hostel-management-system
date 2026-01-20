@@ -1,0 +1,108 @@
+/* General body styling */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+}
+
+/* Top navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #667eea;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.navbar button {
+  padding: 8px 16px;
+  border: none;
+  background: #ff7e5f;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.navbar button:hover {
+  background: #feb47b;
+}
+
+/* Main container */
+.container {
+  padding: 30px;
+}
+
+.welcome {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Card grid */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Card style */
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: #667eea;
+}
+
+.card p {
+  font-size: 1rem;
+  color: #555;
+  margin: 10px 0;
+}
+
+/* Role badges */
+.role {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.ADMIN { background: #ff6b6b; }
+.WARDEN { background: #1dd1a1; }
+.COOK { background: #feca57; }
+.SECURITY { background: #576574; }
+.CLEANER { background: #54a0ff; }
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 15px;
+  background: #667eea;
+  color: white;
+  margin-top: 40px;
+  border-radius: 0 0 12px 12px;
+}

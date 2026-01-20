@@ -1,23 +1,75 @@
-<h2>Add Student</h2>
-<input id="name" placeholder="Name">
-<input id="roll" placeholder="Roll">
-<input id="room" placeholder="Room">
-<button onclick="addStudent()">Add</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students List - Hostel Management</title>
+  <link rel="stylesheet" href="students.css">
+</head>
+<body>
 
-<script>
-const user = JSON.parse(localStorage.getItem("user"));
+  <div class="navbar">
+    <h1>Students List</h1>
+    <a href="dashboard.html" class="btn">Back to Dashboard</a>
+  </div>
 
-async function addStudent() {
-  await fetch("http://localhost:3000/api/students", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      name: name.value,
-      roll_no: roll.value,
-      room_no: room.value,
-      role: user.role
-    })
-  });
-  alert("Student added");
-}
-</script>
+  <div class="container">
+    <table id="students-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll Number</th>
+          <th>Room Number</th>
+          <th>Course</th>
+          <th>Hostel Block</th>
+          <th>Admission Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Student rows dynamically inserted here -->
+      </tbody>
+    </table>
+
+    <div id="message"></div>
+  </div>
+
+  <script>
+    const tableBody = document.querySelector("#students-table tbody");
+    const messageDiv = document.getElementById("message");
+
+    async function fetchStudents() {
+      try {
+        const res = await fetch("http://localhost:3000/api/students");
+        const data = await res.json();
+
+        tableBody.innerHTML = "";
+
+        if(res.ok && data.length > 0){
+          data.forEach(student => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${student.name}</td>
+              <td>${student.roll_no}</td>
+              <td>${student.room_no}</td>
+              <td>${student.course || "-"}</td>
+              <td>${student.hostel_block || "-"}</td>
+              <td>${new Date(student.admission_date).toLocaleDateString()}</td>
+            `;
+            tableBody.appendChild(tr);
+          });
+          messageDiv.textContent = "";
+        } else {
+          messageDiv.textContent = "No students found in the hostel.";
+        }
+
+      } catch (err) {
+        messageDiv.textContent = "Error fetching students: " + err.message;
+      }
+    }
+
+    // Fetch students on page load
+    fetchStudents();
+  </script>
+
+</body>
+</html>
