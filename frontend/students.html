@@ -1,0 +1,23 @@
+<h2>Add Student</h2>
+<input id="name" placeholder="Name">
+<input id="roll" placeholder="Roll">
+<input id="room" placeholder="Room">
+<button onclick="addStudent()">Add</button>
+
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+
+async function addStudent() {
+  await fetch("http://localhost:3000/api/students", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      name: name.value,
+      roll_no: roll.value,
+      room_no: room.value,
+      role: user.role
+    })
+  });
+  alert("Student added");
+}
+</script>

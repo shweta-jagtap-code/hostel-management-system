@@ -1,0 +1,7 @@
+<h2>Dashboard</h2>
+<div id="info"></div>
+
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+info.innerHTML = `Welcome ${user.username} (${user.role})`;
+</script>
