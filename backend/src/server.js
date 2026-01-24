@@ -1,16 +1,23 @@
-const express = require("express");
-const cors = require("cors");
+require("dotenv").config();   // 👈 ADD THIS FIRST
 
-const authRoutes = require("./routes/auth");
-const studentRoutes = require("./routes/students");
+const express = require("express");
+const studentsRoute = require("./routes/students");
 
 const app = express();
-app.use(cors());
+
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+const cors = require("cors");
+app.use(cors());
 
-app.use("/api/auth", authRoutes);
-app.use("/api/students", studentRoutes);
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+// Routes
+app.use("/api/students", studentsRoute);
+
+// Port from env
+const PORT = process.env.APP_PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
