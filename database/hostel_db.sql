@@ -2,18 +2,19 @@
 -- Hostel Management Database
 -- ===============================
 
-DROP DATABASE IF EXISTS hostel_db;
-CREATE DATABASE hostel_db;
+CREATE DATABASE IF NOT EXISTS hostel_db;
 USE hostel_db;
 
 -- -------------------------------
 -- USERS TABLE
 -- -------------------------------
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
-    role ENUM('ADMIN','WARDEN','COOK','SECURITY','CLEANER') NOT NULL
+    role ENUM('ADMIN','WARDEN','COOK','SECURITY','CLEANER') NOT NULL,
+    contact_no VARCHAR(15),
+    email VARCHAR(100) UNIQUE
 );
 
 -- -------------------------------

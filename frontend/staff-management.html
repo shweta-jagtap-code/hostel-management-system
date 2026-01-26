@@ -2,82 +2,131 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hostel Staff Management</title>
+  <title>Staff Management</title>
   <link rel="stylesheet" href="staff-management.css">
 </head>
 <body>
 
-  <header>
-    <h1>Hostel Staff Management</h1>
-  </header>
+<header>
+  <h1>Staff Management</h1>
+</header>
 
-  <main>
-    <!-- Add Staff Form -->
-    <section class="form-section">
-      <h2>Add Staff Member</h2>
-      <form id="staffForm">
-        <input type="text" name="name" placeholder="Name" required>
-        <input type="text" name="role" placeholder="Role (Warden, Cook, Security, Cleaner)" required>
-        <input type="text" name="contact" placeholder="Contact Number" required>
-        <button type="submit">Add Staff</button>
-      </form>
-    </section>
+<main>
 
-    <!-- Staff List Table -->
-    <section class="table-section">
-      <h2>Staff List</h2>
-      <table id="staffTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Contact</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Staff data will go here dynamically -->
-        </tbody>
-      </table>
-    </section>
-  </main>
+  <!-- Add Staff -->
+  <section class="form-section">
+    <h2>Create User</h2>
 
-  <script>
-    const staffForm = document.getElementById('staffForm');
-    const staffTableBody = document.querySelector('#staffTable tbody');
+    <p id="firstUserMsg" class="info-msg"></p>
 
-    // Handle form submit (for now just add to table)
-    staffForm.addEventListener('submit', e => {
-      e.preventDefault();
+    <form id="staffForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="text" id="contact_no" placeholder="Contact Number" />
 
-      const name = staffForm.name.value;
-      const role = staffForm.role.value;
-      const contact = staffForm.contact.value;
+      <!-- Role dropdown hidden initially -->
+      <select id="role" style="display:none;">
+        <option value="">Select Role</option>
+        <option>ADMIN</option>
+        <option>WARDEN</option>
+        <option>COOK</option>
+        <option>SECURITY</option>
+        <option>CLEANER</option>
+      </select>
 
-      // Create new row
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${name}</td>
-        <td>${role}</td>
-        <td>${contact}</td>
+      <button type="submit">Create User</button>
+    </form>
+  </section>
+
+  <!-- Staff List -->
+  <section class="table-section">
+    <h2>Users</h2>
+    <table id="staffTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+</main>
+
+<script>
+const API = "http://localhost:3000/api/users";
+const staffTable = document.querySelector("#staffTable tbody");
+const roleSelect = document.getElementById("role");
+const infoMsg = document.getElementById("firstUserMsg");
+
+async function loadUsers() {
+  const res = await fetch(API);
+  const users = await res.json();
+
+  staffTable.innerHTML = "";
+
+  users.forEach(u => {
+    staffTable.innerHTML += `
+      <tr>
+        <td>${u.user_id}</td>
+        <td>${u.username}</td>
+        <td>${u.role}</td>
         <td>
-          <button class="edit">Edit</button>
-          <button class="delete">Delete</button>
+          <button onclick="deleteUser(${u.user_id})">Delete</button>
         </td>
-      `;
-      staffTableBody.appendChild(tr);
+      </tr>
+    `;
+  });
 
-      // Clear form
-      staffForm.reset();
-    });
+  // If no users exist → hide role
+  if (users.length === 0) {
+    roleSelect.style.display = "none";
+    infoMsg.innerText = "👑 First user will automatically become ADMIN";
+  } else {
+    roleSelect.style.display = "block";
+    infoMsg.innerText = "";
+  }
+}
 
-    // Optional: Handle delete
-    staffTableBody.addEventListener('click', e => {
-      if(e.target.classList.contains('delete')) {
-        e.target.closest('tr').remove();
-      }
-    });
-  </script>
+// Create user
+document.getElementById("staffForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const payload = {
+    username: username.value,
+    email: email.value,
+    contact_no: contact_no.value,
+    role: roleSelect.value
+  };
+
+  const res = await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await res.json();
+  alert(result.message);
+
+  e.target.reset();
+  loadUsers();
+});
+
+// Delete user
+async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
+
+  const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+  const result = await res.json();
+  alert(result.message);
+  loadUsers();
+}
+
+loadUsers();
+</script>
+
 </body>
 </html>
