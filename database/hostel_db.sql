@@ -32,8 +32,8 @@ CREATE TABLE students (
 -- -------------------------------
 -- SAMPLE USERS
 -- -------------------------------
-INSERT INTO users (username, password, role) VALUES
-('admin', 'admin123', 'ADMIN');
+INSERT INTO users (username, password, role, contact_no, email) VALUES
+('admin', 'admin123', 'ADMIN', '9545774456', 'jagtap.ankit.aj@gmail.com');
 
 -- -------------------------------
 -- SAMPLE STUDENTS
@@ -46,5 +46,5 @@ INSERT INTO students (name, contact_no, room_no, course, hostel_block) VALUES
 -- -------------------------------
 -- VERIFY DATA (OPTIONAL)
 -- -------------------------------
-SELECT * FROM users;
-SELECT * FROM students;
+-- SELECT * FROM users;
+-- SELECT * FROM students;

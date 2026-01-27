@@ -1,131 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Staff Management</title>
   <link rel="stylesheet" href="staff-management.css">
 </head>
 <body>
 
 <header>
-  <h1>Staff Management</h1>
+  <h1>🏨 Hostel Staff Management</h1>
 </header>
 
 <main>
 
-  <!-- Add Staff -->
+  <!-- Add User Form -->
   <section class="form-section">
-    <h2>Create User</h2>
+    <h2>Add New Staff</h2>
 
-    <p id="firstUserMsg" class="info-msg"></p>
+    <div class="form-grid">
+      <input type="text" id="username" placeholder="Username">
+      <input type="email" id="email" placeholder="Email">
+      <input type="text" id="contact" placeholder="Contact No">
 
-    <form id="staffForm">
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="text" id="contact_no" placeholder="Contact Number" />
-
-      <!-- Role dropdown hidden initially -->
-      <select id="role" style="display:none;">
+      <select id="role">
         <option value="">Select Role</option>
-        <option>ADMIN</option>
-        <option>WARDEN</option>
-        <option>COOK</option>
-        <option>SECURITY</option>
-        <option>CLEANER</option>
+        <option value="ADMIN">Admin</option>
+        <option value="WARDEN">Warden</option>
+        <option value="COOK">Cook</option>
+        <option value="SECURITY">Security</option>
+        <option value="CLEANER">Cleaner</option>
       </select>
 
-      <button type="submit">Create User</button>
-    </form>
+      <button onclick="addUser()">➕ Add User</button>
+    </div>
+
+    <div id="message" class="info-msg"></div>
   </section>
 
-  <!-- Staff List -->
+  <!-- Staff Table -->
   <section class="table-section">
-    <h2>Users</h2>
-    <table id="staffTable">
+    <h2>Staff List</h2>
+
+    <table>
       <thead>
         <tr>
           <th>ID</th>
           <th>Username</th>
           <th>Role</th>
+          <th>Email</th>
+          <th>Contact</th>
           <th>Action</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="staffTable"></tbody>
     </table>
   </section>
 
 </main>
 
 <script>
-const API = "http://localhost:3000/api/users";
-const staffTable = document.querySelector("#staffTable tbody");
-const roleSelect = document.getElementById("role");
-const infoMsg = document.getElementById("firstUserMsg");
+const API = "http://localhost:3000/api/staff";
 
-async function loadUsers() {
-  const res = await fetch(API);
-  const users = await res.json();
+/* Load staff on page load */
+window.onload = loadStaff;
 
-  staffTable.innerHTML = "";
+/* Fetch Staff */
+async function loadStaff() {
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
 
-  users.forEach(u => {
-    staffTable.innerHTML += `
-      <tr>
-        <td>${u.user_id}</td>
-        <td>${u.username}</td>
-        <td>${u.role}</td>
-        <td>
-          <button onclick="deleteUser(${u.user_id})">Delete</button>
-        </td>
-      </tr>
-    `;
-  });
+    const table = document.getElementById("staffTable");
+    table.innerHTML = "";
 
-  // If no users exist → hide role
-  if (users.length === 0) {
-    roleSelect.style.display = "none";
-    infoMsg.innerText = "👑 First user will automatically become ADMIN";
-  } else {
-    roleSelect.style.display = "block";
-    infoMsg.innerText = "";
+    data.forEach(user => {
+      const row = `
+        <tr>
+          <td>${user.user_id}</td>
+          <td>${user.username}</td>
+          <td>${user.role}</td>
+          <td>${user.email || "-"}</td>
+          <td>${user.contact_no || "-"}</td>
+          <td>
+            <button class="danger" onclick="deleteUser(${user.user_id}, '${user.username}')">
+              🗑 Delete
+            </button>
+          </td>
+        </tr>
+      `;
+      table.innerHTML += row;
+    });
+  } catch (err) {
+    console.error("Load Error", err);
   }
 }
 
-// Create user
-document.getElementById("staffForm").addEventListener("submit", async e => {
-  e.preventDefault();
+/* Add User */
+async function addUser() {
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const contact_no = document.getElementById("contact").value.trim();
+  const role = document.getElementById("role").value;
 
-  const payload = {
-    username: username.value,
-    email: email.value,
-    contact_no: contact_no.value,
-    role: roleSelect.value
-  };
+  if (!username || !email || !contact_no || !role) {
+    alert("Please fill all fields");
+    return;
+  }
 
-  const res = await fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, contact_no, role })
+    });
 
-  const result = await res.json();
-  alert(result.message);
+    const data = await res.json();
+    document.getElementById("message").innerText = data.message;
 
-  e.target.reset();
-  loadUsers();
-});
-
-// Delete user
-async function deleteUser(id) {
-  if (!confirm("Delete this user?")) return;
-
-  const res = await fetch(`${API}/${id}`, { method: "DELETE" });
-  const result = await res.json();
-  alert(result.message);
-  loadUsers();
+    clearForm();
+    loadStaff();
+  } catch (err) {
+    alert("Failed to add user");
+  }
 }
 
-loadUsers();
+/* Delete User */
+async function deleteUser(id, username) {
+  const confirmDelete = confirm(`Are you sure you want to delete "${username}"?`);
+
+  if (!confirmDelete) return;
+
+  try {
+    await fetch(`${API}/${id}`, { method: "DELETE" });
+    loadStaff();
+  } catch (err) {
+    alert("Failed to delete user");
+  }
+}
+
+/* Clear form */
+function clearForm() {
+  document.getElementById("username").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("contact").value = "";
+  document.getElementById("role").value = "";
+}
 </script>
 
 </body>
