@@ -36,7 +36,6 @@ router.post("/", async (req, res) => {
 
     // 🔐 Generate random password
     const tempPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
     const sql = `
       INSERT INTO users (username, password, role, email, contact_no)
@@ -45,7 +44,7 @@ router.post("/", async (req, res) => {
 
     db.query(
       sql,
-      [username, hashedPassword, role, email, contact_no],
+      [username, tempPassword, role, email, contact_no],
       async (err) => {
         if (err) {
           console.error("Create Staff Error:", err);
